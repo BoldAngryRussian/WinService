@@ -1,8 +1,8 @@
 #pragma once
 
 #define LOGSPATH "C:\\Users\\Papa\\source\\repos\\WinService\\Debug\\logs\\"
-
 #define SRV_VERSION "1.0.0.0"
+#define SVCNAME		TEXT("SRVPDC")
 
 namespace SRV
 {

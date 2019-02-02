@@ -18,7 +18,7 @@ int __cdecl main(int argc, char** argv)
 {
 	ILogger::init();
 
-	spdlog::info("Service started. Version '{0}'", SRV_VERSION);
+	spdlog::info("Service started. Version '{0}'", SRV_VERSION);	
 
 	if (argc != 2)
 	{
