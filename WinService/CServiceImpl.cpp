@@ -5,8 +5,11 @@
 
 using namespace SRV;
 
-CServiceImpl::CServiceImpl()
-	:ghSvcStopEvent(NULL)
+HANDLE                  CServiceImpl::ghSvcStopEvent = NULL;
+SERVICE_STATUS          CServiceImpl::gSvcStatus;
+SERVICE_STATUS_HANDLE   CServiceImpl::gSvcStatusHandle;
+
+CServiceImpl::CServiceImpl()	
 {
 }
 
@@ -18,6 +21,20 @@ CServiceImpl::~CServiceImpl()
 void _fastcall CServiceImpl::start()
 {
 	spdlog::info("The service is being started!");
+	// TO_DO: Add any additional services for the process to this table.
+	SERVICE_TABLE_ENTRY DispatchTable[] =
+	{
+		{ (LPWSTR)SVCNAME, (LPSERVICE_MAIN_FUNCTION)_SvcMain },
+		{ NULL, NULL }
+	};
+
+	// This call returns when the service has stopped. 
+	// The process should simply terminate when the call returns.
+	if (!StartServiceCtrlDispatcherW(DispatchTable))
+	{
+		_ReportEvent((LPTSTR)TEXT("StartServiceCtrlDispatcher"));
+		spdlog::info("Can't start dispatcher!");
+	}
 }
 
 void _fastcall CServiceImpl::stop()
@@ -87,7 +104,7 @@ VOID WINAPI CServiceImpl::_SvcMain(DWORD dwArgc, LPTSTR *lpszArgv)
 
 	gSvcStatusHandle = RegisterServiceCtrlHandler(
 													SVCNAME,
-													&SvcCtrlHandler);
+													SvcCtrlHandler);
 
 	if (!gSvcStatusHandle)
 	{	
@@ -105,7 +122,46 @@ VOID WINAPI CServiceImpl::_SvcMain(DWORD dwArgc, LPTSTR *lpszArgv)
 
 	// Perform service-specific initialization and work.
 
-//	SvcInit(dwArgc, lpszArgv);
+	SvcInit(dwArgc, lpszArgv);
+}
+
+VOID CServiceImpl::SvcInit(DWORD dwArgc, LPTSTR *lpszArgv)
+{
+	// TO_DO: Declare and set any required variables.
+	//   Be sure to periodically call ReportSvcStatus() with 
+	//   SERVICE_START_PENDING. If initialization fails, call
+	//   ReportSvcStatus with SERVICE_STOPPED.
+
+	// Create an event. The control handler function, SvcCtrlHandler,
+	// signals this event when it receives the stop control code.
+
+	ghSvcStopEvent = CreateEvent(
+		NULL,    // default security attributes
+		TRUE,    // manual reset event
+		FALSE,   // not signaled
+		NULL);   // no name
+
+	if (ghSvcStopEvent == NULL)
+	{
+		ReportSvcStatus(SERVICE_STOPPED, NO_ERROR, 0);
+		return;
+	}
+
+	// Report running status when initialization is complete.
+
+	ReportSvcStatus(SERVICE_RUNNING, NO_ERROR, 0);
+
+	// TO_DO: Perform work until service stops.
+
+	while (1)
+	{
+		// Check whether to stop the service.
+
+		WaitForSingleObject(ghSvcStopEvent, INFINITE);
+
+		ReportSvcStatus(SERVICE_STOPPED, NO_ERROR, 0);
+		return;
+	}
 }
 
 VOID CServiceImpl::ReportSvcStatus(DWORD dwCurrentState,DWORD dwWin32ExitCode,DWORD dwWaitHint)
@@ -182,4 +238,20 @@ VOID CServiceImpl::_ReportEvent(LPTSTR szFunction)
 
 		DeregisterEventSource(hEventSource);
 	}
+}
+
+ServicePtr SRV::CreatePDCService()
+{
+	static std::mutex Mutex;
+	static ServicePtr service = nullptr;
+
+	if (nullptr == service)
+	{
+		std::lock_guard<std::mutex> lock(Mutex);
+		if (nullptr == service)
+		{
+			service = std::make_shared<CServiceImpl>();
+		}
+	}
+	return service;
 }

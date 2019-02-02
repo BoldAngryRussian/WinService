@@ -10,7 +10,7 @@
 namespace SRV
 {
 
-	typedef std::shared_ptr<IService> ServicePtr;
+	typedef std::shared_ptr<IService> ServicePtr;	
 
 	class CServiceImpl :
 		public IService
@@ -30,31 +30,17 @@ namespace SRV
 		/// <param name="szFunction"></param>
 		/// <returns></returns>
 		VOID _ReportEvent(LPTSTR szFunction);
-
-		VOID WINAPI _SvcMain(DWORD dwArgc, LPTSTR *lpszArgv);		
-		VOID ReportSvcStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint);
-		VOID WINAPI SvcCtrlHandler(DWORD dwCtrl);
-	private:
-		HANDLE                  ghSvcStopEvent;
-		SERVICE_STATUS          gSvcStatus;
-		SERVICE_STATUS_HANDLE   gSvcStatusHandle;
+	public:
+		static VOID WINAPI _SvcMain(DWORD dwArgc, LPTSTR *lpszArgv);		
+		static VOID SvcInit(DWORD dwArgc, LPTSTR *lpszArgv);
+		static VOID ReportSvcStatus(DWORD dwCurrentState, DWORD dwWin32ExitCode, DWORD dwWaitHint);
+		static VOID WINAPI SvcCtrlHandler(DWORD dwCtrl);	
+		static HANDLE                  ghSvcStopEvent;
+		static SERVICE_STATUS          gSvcStatus;
+		static SERVICE_STATUS_HANDLE   gSvcStatusHandle;
 	};
 
-	ServicePtr CreateService()
-	{
-		static std::mutex Mutex;
-		static ServicePtr service = nullptr;
-
-		if (nullptr == service)
-		{
-			std::lock_guard<std::mutex> lock(Mutex);
-			if (nullptr == service)
-			{
-				service = std::make_shared<CServiceImpl>();
-			}
-		}
-		return service;
-	}
+	ServicePtr CreatePDCService();
 }
 
 

@@ -20,6 +20,10 @@ int __cdecl main(int argc, char** argv)
 
 	spdlog::info("Service started. Version '{0}'", SRV_VERSION);	
 
+	auto service = SRV::CreatePDCService();
+	service->start();
+	return 0;
+
 	if (argc != 2)
 	{
 		spdlog::info("Incorrect number of arguments!");
@@ -31,7 +35,7 @@ int __cdecl main(int argc, char** argv)
 		spdlog::debug("The number of parameters '{0}'. Checking the command '{1}'", argc, sParam);
 
 		auto action  = SRV::convert::FromString(sParam);
-		auto service = SRV::CreateService();
+		auto service = SRV::CreatePDCService();
 
 		switch (action)
 		{
