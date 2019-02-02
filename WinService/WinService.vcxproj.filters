@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\UTILS">
+      <UniqueIdentifier>{71761cff-927c-41a3-a81e-b72efeb2e434}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UTILS\Logger">
+      <UniqueIdentifier>{72ab5995-b0b8-49b4-9102-1ba8e590d438}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UTILS\Defines">
+      <UniqueIdentifier>{fb80d9d9-e0ba-41cd-ab81-3e359f3f324d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UTILS\Converter">
+      <UniqueIdentifier>{0dc37169-6f3e-4f03-a3d8-06d39e71feb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Service">
+      <UniqueIdentifier>{7b00ccf2-828c-4858-a782-ba0061245660}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ILogger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>Source Files\UTILS\Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="converter.h">
+      <Filter>Source Files\UTILS\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="IService.h">
+      <Filter>Source Files\Service</Filter>
+    </ClInclude>
+    <ClInclude Include="CServiceImpl.h">
+      <Filter>Source Files\Service</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinService.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ILogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Converter.cpp">
+      <Filter>Source Files\UTILS\Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="CServiceImpl.cpp">
+      <Filter>Source Files\Service</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
