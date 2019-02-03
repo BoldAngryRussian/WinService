@@ -22,14 +22,15 @@ void _fastcall CServiceImpl::start()
 {
 	spdlog::info("The service is being started!");
 	// TO_DO: Add any additional services for the process to this table.
-	SERVICE_TABLE_ENTRY DispatchTable[] =
+	SERVICE_TABLE_ENTRYW DispatchTable[] =
 	{
 		{ (LPWSTR)SVCNAME, (LPSERVICE_MAIN_FUNCTION)_SvcMain },
 		{ NULL, NULL }
 	};
-
+	spdlog::info("Dispatch table created.");
 	// This call returns when the service has stopped. 
 	// The process should simply terminate when the call returns.
+	spdlog::info("Starting the dispatcher...");
 	if (!StartServiceCtrlDispatcherW(DispatchTable))
 	{
 		_ReportEvent((LPTSTR)TEXT("StartServiceCtrlDispatcher"));
@@ -101,7 +102,6 @@ void _fastcall CServiceImpl::install()
 VOID WINAPI CServiceImpl::_SvcMain(DWORD dwArgc, LPTSTR *lpszArgv)
 {
 	// Register the handler function for the service
-
 	gSvcStatusHandle = RegisterServiceCtrlHandler(
 													SVCNAME,
 													SvcCtrlHandler);
@@ -111,9 +111,7 @@ VOID WINAPI CServiceImpl::_SvcMain(DWORD dwArgc, LPTSTR *lpszArgv)
 		spdlog::info("Can't register hadnler main function!");
 		return;
 	}
-
 	// These SERVICE_STATUS members remain as set here
-	SERVICE_STATUS          gSvcStatus;
 	gSvcStatus.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
 	gSvcStatus.dwServiceSpecificExitCode = 0;
 
@@ -121,7 +119,6 @@ VOID WINAPI CServiceImpl::_SvcMain(DWORD dwArgc, LPTSTR *lpszArgv)
 	ReportSvcStatus(SERVICE_START_PENDING, NO_ERROR, 3000);
 
 	// Perform service-specific initialization and work.
-
 	SvcInit(dwArgc, lpszArgv);
 }
 
@@ -134,7 +131,6 @@ VOID CServiceImpl::SvcInit(DWORD dwArgc, LPTSTR *lpszArgv)
 
 	// Create an event. The control handler function, SvcCtrlHandler,
 	// signals this event when it receives the stop control code.
-
 	ghSvcStopEvent = CreateEvent(
 		NULL,    // default security attributes
 		TRUE,    // manual reset event
@@ -148,17 +144,13 @@ VOID CServiceImpl::SvcInit(DWORD dwArgc, LPTSTR *lpszArgv)
 	}
 
 	// Report running status when initialization is complete.
-
 	ReportSvcStatus(SERVICE_RUNNING, NO_ERROR, 0);
-
-	// TO_DO: Perform work until service stops.
-
+	// TO_DO: Perform work until service stops.	
+	spdlog::info("The service start successefuly!");
 	while (1)
 	{
 		// Check whether to stop the service.
-
 		WaitForSingleObject(ghSvcStopEvent, INFINITE);
-
 		ReportSvcStatus(SERVICE_STOPPED, NO_ERROR, 0);
 		return;
 	}
@@ -175,12 +167,16 @@ VOID CServiceImpl::ReportSvcStatus(DWORD dwCurrentState,DWORD dwWin32ExitCode,DW
 
 	if (dwCurrentState == SERVICE_START_PENDING)
 		gSvcStatus.dwControlsAccepted = 0;
-	else gSvcStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+	else 
+		gSvcStatus.dwControlsAccepted = SERVICE_ACCEPT_STOP;
 
 	if ((dwCurrentState == SERVICE_RUNNING) ||
 		(dwCurrentState == SERVICE_STOPPED))
 		gSvcStatus.dwCheckPoint = 0;
-	else gSvcStatus.dwCheckPoint = dwCheckPoint++;
+	else 
+		gSvcStatus.dwCheckPoint = dwCheckPoint++;
+	
+	gSvcStatus.dwCheckPoint = dwCheckPoint++;
 
 	// Report the status of the service to the SCM.
 	SetServiceStatus(gSvcStatusHandle, &gSvcStatus);
