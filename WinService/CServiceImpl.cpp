@@ -147,13 +147,16 @@ VOID CServiceImpl::SvcInit(DWORD dwArgc, LPTSTR *lpszArgv)
 	ReportSvcStatus(SERVICE_RUNNING, NO_ERROR, 0);
 	// TO_DO: Perform work until service stops.	
 	spdlog::info("The service start successefuly!");
-	while (1)
+
+	int i = 0;
+	while (WaitForSingleObject(ghSvcStopEvent, IGNORE) != WAIT_OBJECT_0)
 	{
-		// Check whether to stop the service.
-		WaitForSingleObject(ghSvcStopEvent, INFINITE);
-		ReportSvcStatus(SERVICE_STOPPED, NO_ERROR, 0);
-		return;
+		spdlog::info("Do [{0}] some work here...",i++);
+		Sleep(1000);
 	}
+
+	ReportSvcStatus(SERVICE_STOPPED, NO_ERROR, 0);
+	spdlog::info("The service is being stopped now...");
 }
 
 VOID CServiceImpl::ReportSvcStatus(DWORD dwCurrentState,DWORD dwWin32ExitCode,DWORD dwWaitHint)
